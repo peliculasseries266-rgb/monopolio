@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d3b2c">
+<title>Turista</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:#0d3b2c;color:#fff;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+  body{padding-bottom:84px}
+  .wrap{max-width:560px;margin:0 auto;padding:14px}
+  h1{margin:8px 0 4px;color:#ffd54a;letter-spacing:3px;text-align:center}
+  .muted{opacity:.75;font-size:.9rem}
+  input[type=text],input[type=number],select{width:100%;padding:14px;border-radius:12px;border:2px solid #2d7a5e;background:#0a2a1f;color:#fff;font-size:1.1rem}
+  button{font:inherit;border:0;border-radius:14px;padding:14px 16px;font-weight:700;font-size:1rem;color:#fff;background:#2d7a5e;cursor:pointer}
+  button:active{transform:scale(.97)}
+  button:disabled{opacity:.4}
+  button.big{width:100%;padding:20px;font-size:1.3rem}
+  button.gold{background:#ffb300;color:#241800}
+  button.red{background:#c0392b}
+  button.gray{background:#445}
+  button.sm{padding:8px 10px;font-size:.85rem;border-radius:10px}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .stack{display:flex;flex-direction:column;gap:10px}
+  .top{position:sticky;top:0;z-index:5;background:#0a2a1f;border-bottom:3px solid;padding:10px 14px;display:flex;align-items:center;gap:12px}
+  .top .tok{font-size:1.8rem}
+  .top .nm{font-weight:700}
+  .top .money{margin-left:auto;font-size:1.7rem;font-weight:800;color:#7dff9b;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.15);font-size:.8rem}
+  .banner{padding:14px;border-radius:14px;background:rgba(255,255,255,.1);text-align:center;font-weight:600}
+  .banner.me{background:#ffb300;color:#241800;font-size:1.15rem}
+  .dice{display:flex;gap:10px;justify-content:center;font-size:3.4rem;line-height:1}
+  .dice span{background:#fff;color:#111;border-radius:12px;padding:0 6px}
+  .cardpop{background:#fff;color:#111;border-radius:14px;padding:12px;border-left:10px solid}
+  .cardpop small{font-weight:800;display:block;margin-bottom:4px}
+  .box{background:rgba(0,0,0,.28);border-radius:14px;padding:12px}
+  .pc{background:#fbf3dc;color:#111;border-radius:12px;overflow:hidden;margin-bottom:10px}
+  .pc .ch{padding:10px 12px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+  .pc .cb{padding:10px 12px;font-size:.9rem}
+  .pc .rent{font-size:.78rem;color:#444;margin:4px 0 8px}
+  .pc.mort{filter:grayscale(.85)}
+  .houses{display:flex;gap:3px;align-items:center}
+  .h{width:14px;height:14px;background:#1f9d3a;border-radius:3px;border:1px solid #063}
+  .H{width:28px;height:14px;background:#d22;border-radius:3px;border:1px solid #600}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0a2a1f;border-top:2px solid #2d7a5e;padding-bottom:env(safe-area-inset-bottom)}
+  nav button{flex:1;border-radius:0;background:transparent;padding:14px 4px;font-size:.85rem;position:relative}
+  nav button.on{background:#2d7a5e}
+  nav .badge{position:absolute;top:6px;right:18%;background:#e74c3c;border-radius:99px;font-size:.7rem;padding:1px 6px}
+  .pl{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.08);border-left:6px solid;margin-bottom:8px}
+  .pl.turn{background:rgba(255,213,74,.2)}
+  .pl.out{opacity:.4;text-decoration:line-through}
+  .dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+  .dot{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.5)}
+  .log div{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.88rem}
+  .log div:first-child{font-weight:700;color:#ffe9a8}
+  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#c0392b;color:#fff;padding:12px 18px;border-radius:12px;z-index:50;display:none;max-width:90%;text-align:center;font-weight:600}
+  #modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:40;display:none;align-items:center;justify-content:center;padding:16px}
+  #modal .in{background:#143f31;border-radius:18px;padding:18px;max-width:480px;width:100%;max-height:90vh;overflow:auto;border:2px solid #ffb300}
+  label.chk{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;background:rgba(255,255,255,.07);margin-bottom:6px;font-size:.92rem}
+  label.chk input{width:20px;height:20px}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px}
+  #conn{position:fixed;top:0;left:0;right:0;background:#b00;text-align:center;padding:4px;font-size:.8rem;display:none;z-index:60}
+</style>
+</head>
+<body>
+<div id="conn">Reconectando…</div>
+<div id="toast"></div>
+<div id="modal"><div class="in" id="modalIn"></div></div>
+
+<!-- Pantalla de unirse -->
+<div id="join" class="wrap" style="display:none">
+  <h1>TURISTA</h1>
+  <p class="muted" style="text-align:center">Escribe tu nombre para sentarte a la mesa</p>
+  <div class="stack">
+    <input type="text" id="nameIn" maxlength="12" placeholder="Tu nombre" autocomplete="off">
+    <button class="big gold" id="joinBtn">Unirme</button>
+    <div id="joinMsg" class="muted" style="text-align:center"></div>
+  </div>
+</div>
+
+<!-- Juego -->
+<div id="gameBox" style="display:none">
+  <div class="top" id="top"></div>
+  <div class="wrap" id="game"></div>
+  <nav id="nav"></nav>
+</div>
+
+<script>
+let BOARD = null, GROUPS = null, S = null, YOU = null;
+let tab = 'turn';
+let draft = { to: '', give: [], get: [], giveMoney: '', getMoney: '' };
+let pendingRender = false;
+const FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+const $ = (id) => document.getElementById(id);
+
+function token() {
+  let t = localStorage.getItem('turista_token');
+  if (!t) { t = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36)); localStorage.setItem('turista_token', t); }
+  return t;
+}
+let ws;
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/ws');
+  ws.onopen = () => { $('conn').style.display = 'none'; send({ a: 'hello', token: token() }); };
+  ws.onclose = () => { $('conn').style.display = 'block'; setTimeout(connect, 1500); };
+  ws.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    if (m.a === 'board') { BOARD = m.board; GROUPS = m.groups; }
+    else if (m.a === 'state') { S = m.s; YOU = m.you; render(); }
+    else if (m.a === 'err') toast(m.m);
+  };
+}
+function send(o) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+function toast(t) { const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', 3200); if (navigator.vibrate) navigator.vibrate(60); }
+
+$('joinBtn').onclick = () => {
+  const name = $('nameIn').value.trim();
+  if (!name) return toast('Escribe tu nombre');
+  localStorage.setItem('turista_name', name);
+  send({ a: 'join', token: token(), name });
+};
+$('nameIn').value = localStorage.getItem('turista_name') || '';
+$('nameIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('joinBtn').click(); });
+connect();
+
+const me = () => S && S.players.find(p => p.id === YOU);
+const pl = (id) => S.players.find(p => p.id === id);
+const cur = () => pl(S.turn);
+const grpIdx = (g) => BOARD.map((s, i) => s.g === g ? i : -1).filter(i => i >= 0);
+const money = (n) => '$' + n.toLocaleString('es-MX');
+const myProps = () => Object.keys(S.props).map(Number).filter(i => S.props[i].owner === YOU);
+function colorOf(i) { const s = BOARD[i]; return s.t === 'prop' ? GROUPS[s.g].c : (s.t === 'rail' ? '#8a8a8a' : '#d4b100'); }
+
+function render() {
+  if (!BOARD || !S) return;
+  const m = me();
+  if (!m) {
+    $('join').style.display = 'block'; $('gameBox').style.display = 'none';
+    $('joinMsg').textContent = S.phase === 'lobby' ? `Jugadores en la mesa: ${S.players.map(p => p.name).join(', ') || 'ninguno'}` : 'La partida ya empezó. Espera a la siguiente.';
+    $('joinBtn').disabled = S.phase !== 'lobby' || S.players.length >= 6;
+    return;
+  }
+  $('join').style.display = 'none'; $('gameBox').style.display = 'block';
+  const ae = document.activeElement;
+  if (ae && ae.tagName === 'INPUT' && $('game').contains(ae)) { pendingRender = true; return; }
+  pendingRender = false;
+  renderTop(m);
+  renderNav();
+  renderModal();
+  const g = $('game');
+  if (S.phase === 'lobby') g.innerHTML = lobbyView(m);
+  else if (tab === 'turn') g.innerHTML = turnView(m);
+  else if (tab === 'cards') g.innerHTML = cardsView(m);
+  else if (tab === 'trade') g.innerHTML = tradeView(m);
+  else g.innerHTML = tableView(m);
+  bindDraft();
+}
+document.addEventListener('focusout', () => { setTimeout(() => { if (pendingRender) render(); }, 150); });
+
+function renderTop(m) {
+  const t = $('top');
+  t.style.borderColor = m.color;
+  t.innerHTML = `<div class="tok">${m.emoji}</div><div><div class="nm">${m.name}${m.host ? ' ⭐' : ''}</div><div class="muted">${m.bankrupt ? 'Fuera de la partida' : (m.inJail ? '🔒 En la cárcel' : 'Casilla: ' + BOARD[m.pos].n)}</div></div><div class="money">${money(m.money)}</div>`;
+}
+function renderNav() {
+  const nav = $('nav');
+  if (S.phase === 'lobby') { nav.style.display = 'none'; return; }
+  nav.style.display = 'flex';
+  const inc = S.trade && S.trade.to === YOU ? '<span class="badge">1</span>' : '';
+  const items = [['turn', '🎲 Turno'], ['cards', '🃏 Mis cartas'], ['trade', '🤝 Tratos' + inc], ['table', '👥 Mesa']];
+  nav.innerHTML = items.map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" onclick="setTab('${k}')">${l}</button>`).join('');
+}
+function setTab(k) { tab = k; render(); window.scrollTo(0, 0); }
+
+/* ---------- Lobby ---------- */
+function lobbyView(m) {
+  const n = S.players.length;
+  return `<h1>TURISTA</h1>
+  <p class="muted" style="text-align:center">Mira la TV: ahí se ve el tablero. Aquí verás tu dinero y tus cartas.</p>
+  <div class="box">${S.players.map(p => `<div class="pl" style="border-color:${p.color}"><span style="font-size:1.6rem">${p.emoji}</span><b style="flex:1">${p.name}${p.host ? ' ⭐' : ''}${p.id === YOU ? ' (tú)' : ''}</b>${m.host && p.id !== YOU ? `<button class="sm red" onclick="kick('${p.id}')">Sacar</button>` : ''}</div>`).join('')}</div>
+  <p style="text-align:center"><span class="pill">${n} de 6 jugadores</span></p>
+  ${m.host ? `<button class="big gold" ${n < 2 ? 'disabled' : ''} onclick="send({a:'start'})">${n < 2 ? 'Faltan jugadores (mínimo 2)' : '▶ Iniciar partida'}</button>` : `<div class="banner">Esperando a que ${S.players.find(p => p.host).name} inicie la partida…</div>`}`;
+}
+function kick(id) { if (confirm('¿Sacar a este jugador?')) send({ a: 'kick', id }); }
+
+/* ---------- Turno ---------- */
+function diceHtml() { return `<div class="dice"><span>${FACES[S.dice[0] - 1]}</span><span>${FACES[S.dice[1] - 1]}</span></div>`; }
+function turnView(m) {
+  if (S.phase === 'ended') {
+    const w = S.winner && pl(S.winner);
+    return `<div class="banner me" style="font-size:1.4rem">🏆 ${w ? w.emoji + ' ' + w.name : '—'} ganó la partida</div>
+      ${m.host ? '<button class="big gold" style="margin-top:14px" onclick="send({a:\'reset\'})">Nueva partida</button>' : '<p class="muted" style="text-align:center">El anfitrión puede iniciar otra partida.</p>'}`;
+  }
+  if (m.bankrupt) return `<div class="banner">Estás fuera de la partida. Puedes seguir viendo la TV.</div>`;
+  const t = cur(), mine = t.id === YOU, pd = S.pending;
+  let h = '';
+  h += mine ? `<div class="banner me">¡Es tu turno!</div>` : `<div class="banner">Turno de ${t.emoji} ${t.name}</div>`;
+  h += diceHtml();
+  if (S.card) {
+    const col = S.card.deck === 'chance' ? '#e67e22' : '#3498db';
+    h += `<div class="cardpop" style="border-color:${col};color:#111"><small style="color:${col}">${S.card.deck === 'chance' ? '❓ SUERTE' : '🎁 CAJA COMUNAL'} · ${pl(S.card.pid).name}</small>${S.card.text}</div>`;
+  }
+  // Deuda (puede ser mía aunque no sea mi turno, p. ej. tras cobrarme)
+  if (pd && pd.type === 'debt' && pd.pid === YOU) {
+    const to = pd.to === 'bank' ? 'el banco' : (pd.to === 'each' ? 'cada jugador' : pl(pd.to).name);
+    h += `<div class="box stack"><b style="color:#ff8a80">Debes ${money(pd.amount)} a ${to}</b><span class="muted">${pd.reason}. Te faltan ${money(Math.max(0, pd.amount - m.money))}: hipoteca o vende construcciones en "Mis cartas".</span>
+      <button class="big gold" ${m.money < pd.amount ? 'disabled' : ''} onclick="send({a:'payDebt'})">Pagar ${money(pd.amount)}</button>
+      <button class="red" onclick="if(confirm('¿Declararte en bancarrota? Saldrás de la partida.'))send({a:'bankrupt'})">Declararme en bancarrota</button></div>`;
+    return h + logView();
+  }
+  if (mine) {
+    if (pd && pd.type === 'buy') {
+      const sq = BOARD[pd.idx];
+      h += `<div class="pc"><div class="ch" style="background:${colorOf(pd.idx)};color:${sq.t === 'prop' && ['lb', 'yellow'].includes(sq.g) ? '#111' : '#fff'}"><span>${sq.n}</span><span>${money(sq.price)}</span></div><div class="cb">${rentInfo(pd.idx)}</div></div>
+      <div class="row"><button class="big gold" onclick="send({a:'buy'})">Comprar ${money(sq.price)}</button><button class="big gray" onclick="send({a:'decline'})">No comprar</button></div>`;
+    } else if (pd && pd.type === 'debt') {
+      h += `<div class="banner">Esperando que se resuelva una deuda…</div>`;
+    } else if (!S.rolled) {
+      if (m.inJail) {
+        h += `<div class="box stack"><b>🔒 Estás en la cárcel</b><span class="muted">Intenta sacar dobles, paga la fianza o usa tu carta.</span>
+          <button class="big gold" onclick="send({a:'roll'})">🎲 Tirar dados (buscar dobles)</button>
+          <div class="row"><button ${m.money < 50 ? 'disabled' : ''} onclick="send({a:'payJail'})">Pagar $50</button>${m.jailCards ? `<button onclick="send({a:'jailCard'})">Usar carta 🎟️</button>` : ''}</div></div>`;
+      } else {
+        h += `<button class="big gold" onclick="send({a:'roll'})">🎲 Tirar dados</button>`;
+      }
+    } else {
+      h += `<button class="big gold" onclick="send({a:'end'})">Terminar turno ➜</button>`;
+      h += `<p class="muted" style="text-align:center">Antes de terminar puedes construir, hipotecar o hacer tratos.</p>`;
+    }
+  } else if (pd && pd.type === 'buy') {
+    h += `<div class="banner">${t.name} decide si compra ${BOARD[pd.idx].n}…</div>`;
+  }
+  return h + logView();
+}
+function logView() { return `<h3 style="margin:18px 0 6px">Últimos movimientos</h3><div class="box log">${S.log.slice(-6).reverse().map(l => `<div>${l}</div>`).join('')}</div>`; }
+function rentInfo(i) {
+  const s = BOARD[i];
+  if (s.t === 'prop') return `<div class="rent">Renta: ${s.rent.map(money).join(' · ')}<br>(sola · 1 casa · 2 · 3 · 4 · hotel) · Casa: ${money(GROUPS[s.g].h)} · Hipoteca: ${money(s.price / 2)}</div>`;
+  if (s.t === 'rail') return `<div class="rent">Renta: $25 / $50 / $100 / $200 según cuántos aeropuertos tengas · Hipoteca: ${money(s.price / 2)}</div>`;
+  return `<div class="rent">Renta: 4× los dados (10× si tienes las dos) · Hipoteca: ${money(s.price / 2)}</div>`;
+}
+
+/* ---------- Mis cartas ---------- */
+function cardsView(m) {
+  if (S.phase === 'lobby') return '';
+  const mine = myProps();
+  let h = `<h2 style="margin:6px 0">Mis propiedades <span class="pill">${mine.length}</span></h2>`;
+  if (m.jailCards) h += `<div class="pc"><div class="ch" style="background:#ffb300;color:#241800">🎟️ Sal de la cárcel gratis <span>x${m.jailCards}</span></div></div>`;
+  if (!mine.length) h += `<div class="banner">Todavía no tienes propiedades.</div>`;
+  const order = mine.slice().sort((a, b) => a - b);
+  h += order.map(i => {
+    const s = BOARD[i], st = S.props[i];
+    const light = s.t === 'prop' && ['lb', 'yellow'].includes(s.g);
+    let hs = '';
+    if (st.houses === 5) hs = '<div class="H"></div>'; else for (let k = 0; k < st.houses; k++) hs += '<div class="h"></div>';
+    let btns = '';
+    if (s.t === 'prop' && !st.mortgaged) {
+      btns += `<button class="sm" onclick="send({a:'build',i:${i}})">🏠 Construir ${money(GROUPS[s.g].h)}</button>`;
+      if (st.houses > 0) btns += `<button class="sm gray" onclick="send({a:'sell',i:${i}})">Vender casa +${money(GROUPS[s.g].h / 2)}</button>`;
+    }
+    if (st.mortgaged) btns += `<button class="sm gold" onclick="send({a:'unmortgage',i:${i}})">Deshipotecar ${money(Math.ceil(s.price * .55))}</button>`;
+    else btns += `<button class="sm red" onclick="send({a:'mortgage',i:${i}})">Hipotecar +${money(s.price / 2)}</button>`;
+    return `<div class="pc ${st.mortgaged ? 'mort' : ''}"><div class="ch" style="background:${colorOf(i)};color:${light ? '#111' : '#fff'}"><span>${s.n}${st.mortgaged ? ' (hipotecada)' : ''}</span><span class="houses">${hs}</span></div><div class="cb">${rentInfo(i)}<div class="row" style="flex-wrap:wrap">${btns}</div></div></div>`;
+  }).join('');
+  return h;
+}
+
+/* ---------- Tratos ---------- */
+function bindDraft() {
+  const t = $('tradeTo'); if (t) t.onchange = () => { draft.to = t.value; draft.get = []; render(); };
+  const gm = $('giveMoney'); if (gm) gm.oninput = () => draft.giveMoney = gm.value;
+  const tm = $('getMoney'); if (tm) tm.oninput = () => draft.getMoney = tm.value;
+}
+function toggleDraft(side, i) {
+  const a = draft[side], k = a.indexOf(i);
+  if (k >= 0) a.splice(k, 1); else a.push(i);
+  render();
+}
+function sendTrade() {
+  send({ a: 'trade', to: draft.to, give: { props: draft.give, money: Number(draft.giveMoney) || 0 }, get: { props: draft.get, money: Number(draft.getMoney) || 0 } });
+  draft = { to: '', give: [], get: [], giveMoney: '', getMoney: '' };
+}
+function tradeDesc(t) {
+  const f = (side) => [...side.props.map(i => BOARD[i].n), ...(side.money ? [money(side.money)] : [])].join(', ') || 'nada';
+  return `<b>${pl(t.from).name}</b> da: ${f(t.give)}<br><b>${pl(t.to).name}</b> da: ${f(t.get)}`;
+}
+function tradeView(m) {
+  if (m.bankrupt) return '';
+  let h = `<h2 style="margin:6px 0">Tratos</h2>`;
+  if (S.trade) {
+    h += `<div class="box stack">${tradeDesc(S.trade)}${S.trade.from === YOU ? '<span class="muted">Esperando respuesta…</span>' : ''}<div class="row">${S.trade.to === YOU ? `<button class="gold" onclick="send({a:'tradeAccept'})">Aceptar</button>` : ''}<button class="red" onclick="send({a:'tradeCancel'})">${S.trade.to === YOU ? 'Rechazar' : 'Cancelar trato'}</button></div></div>`;
+    return h;
+  }
+  const others = S.players.filter(p => p.id !== YOU && !p.bankrupt);
+  const theirProps = draft.to ? Object.keys(S.props).map(Number).filter(i => S.props[i].owner === draft.to) : [];
+  h += `<div class="stack"><select id="tradeTo"><option value="">Elige con quién tratar…</option>${others.map(p => `<option value="${p.id}" ${draft.to === p.id ? 'selected' : ''}>${p.emoji} ${p.name}</option>`).join('')}</select>`;
+  if (draft.to) {
+    h += `<div class="box"><b>Tú das</b>${myProps().map(i => `<label class="chk"><input type="checkbox" ${draft.give.includes(i) ? 'checked' : ''} onchange="toggleDraft('give',${i})"><span class="sw" style="background:${colorOf(i)}"></span>${BOARD[i].n}</label>`).join('') || '<div class="muted">Sin propiedades</div>'}
+      <input type="number" id="giveMoney" inputmode="numeric" min="0" placeholder="Dinero que das ($)" value="${draft.giveMoney}" style="margin-top:6px"></div>
+      <div class="box"><b>Tú pides</b>${theirProps.map(i => `<label class="chk"><input type="checkbox" ${draft.get.includes(i) ? 'checked' : ''} onchange="toggleDraft('get',${i})"><span class="sw" style="background:${colorOf(i)}"></span>${BOARD[i].n}</label>`).join('') || '<div class="muted">Sin propiedades</div>'}
+      <input type="number" id="getMoney" inputmode="numeric" min="0" placeholder="Dinero que pides ($)" value="${draft.getMoney}" style="margin-top:6px"></div>
+      <button class="big gold" onclick="sendTrade()">Proponer trato</button>`;
+  }
+  h += `</div><p class="muted">Solo se pueden tratar propiedades de colores sin casas.</p>`;
+  return h;
+}
+
+/* ---------- Mesa ---------- */
+function tableView(m) {
+  let h = `<h2 style="margin:6px 0">La mesa</h2>`;
+  h += S.players.map(p => {
+    const mine = Object.keys(S.props).map(Number).filter(i => S.props[i].owner === p.id);
+    return `<div class="pl ${p.id === S.turn && S.phase === 'playing' ? 'turn' : ''} ${p.bankrupt ? 'out' : ''}" style="border-color:${p.color}">
+      <span style="font-size:1.6rem">${p.emoji}</span>
+      <div style="flex:1"><b>${p.name}${p.host ? ' ⭐' : ''}${p.id === YOU ? ' (tú)' : ''}${p.connected ? '' : ' 📴'}</b>
+      <div class="muted">${p.inJail ? '🔒 cárcel · ' : ''}${mine.length} propiedades</div>
+      <div class="dots">${mine.map(i => `<div class="dot" style="background:${colorOf(i)};${S.props[i].mortgaged ? 'opacity:.35' : ''}"></div>`).join('')}</div></div>
+      ${m.host && p.id !== YOU && !p.bankrupt && S.phase === 'playing' ? `<button class="sm red" onclick="kick('${p.id}')">Sacar</button>` : ''}
+    </div>`;
+  }).join('');
+  h += `<h3>Historial</h3><div class="box log">${S.log.slice().reverse().map(l => `<div>${l}</div>`).join('')}</div>`;
+  if (m.host) h += `<button class="red" style="margin-top:14px;width:100%" onclick="if(confirm('¿Reiniciar la partida? Se pierde el avance.'))send({a:'reset'})">Reiniciar partida</button>`;
+  else if (!m.bankrupt && S.phase === 'playing') h += `<button class="gray" style="margin-top:14px;width:100%" onclick="if(confirm('¿Rendirte? Saldrás de la partida.'))send({a:'bankrupt'})">Rendirme</button>`;
+  return h;
+}
+
+/* ---------- Trato entrante (ventana emergente) ---------- */
+function renderModal() {
+  const md = $('modal');
+  if (S.trade && S.trade.to === YOU && tab !== 'trade') {
+    $('modalIn').innerHTML = `<h3 style="margin-top:0">🤝 Te proponen un trato</h3><p>${tradeDesc(S.trade)}</p><div class="row"><button class="gold" onclick="send({a:'tradeAccept'})">Aceptar</button><button class="red" onclick="send({a:'tradeCancel'})">Rechazar</button></div>`;
+    md.style.display = 'flex';
+  } else md.style.display = 'none';
+}
+</script>
+</body>
+</html>
