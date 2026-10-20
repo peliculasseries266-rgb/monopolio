@@ -1,0 +1,16 @@
+{
+  "name": "turista-tv",
+  "version": "1.0.0",
+  "description": "Juego de mesa tipo Turista/Monopolio: tablero en la TV, jugadores desde el celular",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "ws": "^8.18.0"
+  }
+}

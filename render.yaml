@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: turista
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
